@@ -219,11 +219,11 @@ func Run(ps *pubsub.PubSub, loggerArg *logrus.Logger, logArg *base.LogObject) in
 
 	ticker := flextimer.NewExpTicker(time.Second, maxDelay, 0.0)
 
-	server, err := ioutil.ReadFile(types.ServerFileName)
+	snp, err := zedcloud.GetServerNameAndPort(log)
 	if err != nil {
 		log.Fatal(err)
 	}
-	serverNameAndPort = strings.TrimSpace(string(server))
+	serverNameAndPort = snp
 	serverName := strings.Split(serverNameAndPort, ":")[0]
 
 	var onboardCert tls.Certificate
@@ -359,14 +359,14 @@ func Run(ps *pubsub.PubSub, loggerArg *logrus.Logger, logArg *base.LogObject) in
 
 		case <-ticker.C:
 			// Check in case /config/server changes while running
-			nserver, err := ioutil.ReadFile(types.ServerFileName)
+			nsnp, err := zedcloud.GetServerNameAndPort(log)
 			if err != nil {
 				log.Error(err)
-			} else if len(nserver) != 0 && string(server) != string(nserver) {
+			} else if len(nsnp) != 0 && string(snp) != string(nsnp) {
 				log.Warnf("/config/server changed from %s to %s",
-					server, nserver)
-				server = nserver
-				serverNameAndPort = strings.TrimSpace(string(server))
+					snp, nsnp)
+				snp = nsnp
+				serverNameAndPort = snp
 				serverName = strings.Split(serverNameAndPort, ":")[0]
 				if onboardTLSConfig != nil {
 					onboardTLSConfig, err = zedcloud.GetTlsConfig(zedcloudCtx.DeviceNetworkStatus,

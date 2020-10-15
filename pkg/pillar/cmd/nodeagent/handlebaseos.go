@@ -7,7 +7,9 @@ package nodeagent
 
 import (
 	"fmt"
+
 	"github.com/lf-edge/eve/pkg/pillar/types"
+	"github.com/lf-edge/eve/pkg/pillar/zedcloud"
 )
 
 // baseos upgrade installation path
@@ -78,6 +80,8 @@ func doZbootBaseOsTestValidationComplete(ctxPtr *nodeagentContext,
 		log.Tracef("%s: not TestComplete", key)
 		return
 	}
+	// In case we were using an override server file, commit to it
+	zedcloud.CommitServerNameAndPort(log)
 	config := lookupZbootConfig(ctxPtr, status.PartitionLabel)
 	if config == nil || ctxPtr.updateComplete {
 		return

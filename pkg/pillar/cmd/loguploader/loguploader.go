@@ -324,13 +324,12 @@ func Run(ps *pubsub.PubSub, loggerArg *logrus.Logger, logArg *base.LogObject) in
 
 func sendCtxInit(ctx *loguploaderContext) {
 	//get server name
-	bytes, err := ioutil.ReadFile(types.ServerFileName)
+	snp, err := zedcloud.GetServerNameAndPort(log)
 	if err != nil {
-		log.Fatalf("sendCtxInit: Failed to read ServerFileName(%s). Err: %s",
-			types.ServerFileName, err)
+		log.Fatalf("sendCtxInit: %v", err)
 	}
 	// Preserve port
-	ctx.serverNameAndPort = strings.TrimSpace(string(bytes))
+	ctx.serverNameAndPort = snp
 	serverName := strings.Split(ctx.serverNameAndPort, ":")[0]
 
 	//set newlog url

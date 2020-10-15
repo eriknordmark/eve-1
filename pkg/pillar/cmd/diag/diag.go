@@ -12,7 +12,6 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"mime"
 	"net"
 	"net/http"
@@ -154,11 +153,11 @@ func Run(ps *pubsub.PubSub, loggerArg *logrus.Logger, logArg *base.LogObject) in
 	}
 	log.Functionf("processed GlobalConfig")
 
-	server, err := ioutil.ReadFile(types.ServerFileName)
+	snp, err := zedcloud.GetServerNameAndPort(log)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx.serverNameAndPort = strings.TrimSpace(string(server))
+	ctx.serverNameAndPort = snp
 	ctx.serverName = strings.Split(ctx.serverNameAndPort, ":")[0]
 
 	zedcloudCtx := zedcloud.NewContext(log, zedcloud.ContextOptions{
@@ -308,14 +307,14 @@ func Run(ps *pubsub.PubSub, loggerArg *logrus.Logger, logArg *base.LogObject) in
 			ctx.usingOnboardCert = false
 		}
 		// Check in case /config/server changes while running
-		nserver, err := ioutil.ReadFile(types.ServerFileName)
+		nsnp, err := zedcloud.GetServerNameAndPort(log)
 		if err != nil {
 			log.Error(err)
-		} else if len(nserver) != 0 && string(server) != string(nserver) {
+		} else if len(nsnp) != 0 && string(snp) != string(nsnp) {
 			log.Warnf("/config/server changed from %s to %s",
-				server, nserver)
-			server = nserver
-			ctx.serverNameAndPort = strings.TrimSpace(string(server))
+				snp, nsnp)
+			snp = nsnp
+			ctx.serverNameAndPort = snp
 			ctx.serverName = strings.Split(ctx.serverNameAndPort, ":")[0]
 		}
 	}
