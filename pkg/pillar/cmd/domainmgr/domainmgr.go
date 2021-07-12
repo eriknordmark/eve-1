@@ -1095,7 +1095,7 @@ func doAssignIoAdaptersToDomain(ctx *domainContext, config types.DomainConfig,
 			if ib == nil {
 				continue
 			}
-			log.Functionf("doAssignIoAdaptersToDomain processing adapter %d %s member %s",
+			log.Functionf("doAssignIoAdaptersToDomain processing adapter %d %s phylabel %s",
 				adapter.Type, adapter.Name, ib.Phylabel)
 			if ib.UsedByUUID != config.UUIDandVersion.UUID {
 				log.Fatalf("doAssignIoAdaptersToDomain IoBundle stolen by %s: %d %s for %s",
@@ -1715,10 +1715,10 @@ func reserveAdapters(ctx *domainContext, config types.DomainConfig) error {
 			if ibp == nil {
 				continue
 			}
-			log.Functionf("reserveAdapters processing adapter %d %s member %s",
+			log.Functionf("reserveAdapters processing adapter %d %s phylabel %s",
 				adapter.Type, adapter.Name, ibp.Phylabel)
 			if ibp.AssignmentGroup == "" {
-				return fmt.Errorf("adapter %d %s member %s is not assignable",
+				return fmt.Errorf("adapter %d %s phylabel %s is not assignable",
 					adapter.Type, adapter.Name, ibp.Phylabel)
 			}
 			if ibp.UsedByUUID != config.UUIDandVersion.UUID &&
@@ -1727,11 +1727,11 @@ func reserveAdapters(ctx *domainContext, config types.DomainConfig) error {
 					adapter.Type, adapter.Name, ibp.UsedByUUID)
 			}
 			if ibp.IsPort {
-				return fmt.Errorf("adapter %d %s member %s is (part of) a zedrouter port",
+				return fmt.Errorf("adapter %d %s phylabel %s is (part of) a zedrouter port",
 					adapter.Type, adapter.Name, ibp.Phylabel)
 			}
 			if ibp.Error != "" {
-				return fmt.Errorf("adapter %d %s member %s has error: %s",
+				return fmt.Errorf("adapter %d %s phylabel %s has error: %s",
 					adapter.Type, adapter.Name, ibp.Phylabel, ibp.Error)
 			}
 		}
@@ -1740,10 +1740,10 @@ func reserveAdapters(ctx *domainContext, config types.DomainConfig) error {
 				continue
 			}
 			if ibp.PciLong != "" && !hasIOVirtualization {
-				return fmt.Errorf("no I/O virtualization support: adapter %d %s member %s cannot be assigned",
+				return fmt.Errorf("no I/O virtualization support: adapter %d %s phylabel %s cannot be assigned",
 					adapter.Type, adapter.Name, ibp.Phylabel)
 			}
-			log.Tracef("reserveAdapters setting uuid %s for adapter %d %s member %s",
+			log.Tracef("reserveAdapters setting uuid %s for adapter %d %s phylabel %s",
 				config.Key(), adapter.Type, adapter.Name, ibp.Phylabel)
 			ibp.UsedByUUID = config.UUIDandVersion.UUID
 		}
